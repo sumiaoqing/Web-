@@ -1,0 +1,113 @@
+<template>
+<div class="work">
+  <div class="title">
+    <mu-icon value="work" color="#1d3653" /> 
+    <span>工作经验</span>
+  </div>
+
+
+  <mu-icon value="add"  mini class="demo-float-button WorkBtn" @click="openWork" style="color:red"/>
+  
+
+
+
+
+
+  <mu-dialog :open="workDialog" title="工作经验" @close="closeWork">
+    <mu-container>
+      <mu-row gutter>
+        <mu-col width="50" table="30" desktop="20">
+          <!-- <mu-date-input mode="landscape" placeholder="开始时间" fullWidth v-model="work.startTime" /> -->
+          <mu-date-input v-model="work.startTime" label="开始时间" label-float full-width></mu-date-input>
+        </mu-col>
+        <mu-col width="50" table="30" desktop="20">
+          <!-- <mu-date-input mode="landscape" placeholder="结束时间" fullWidth v-model="work.endTime"   /> -->
+          <mu-date-input v-model="work.endTime" label="结束时间" label-float full-width></mu-date-input>
+        </mu-col>
+        <mu-col width="50" table="30" desktop="35">
+          <mu-text-field placeholder="工作单位" fullWidth v-model="work.department" />
+        </mu-col>
+        <mu-col width="50" table="30" desktop="25">
+          <mu-text-field placeholder="职位" fullWidth v-model="work.position" />
+        </mu-col>
+      </mu-row>
+      <mu-row gutter>
+        <mu-col width="100" table="100" desktop="100">
+          <mu-text-field placeholder="输入工作经验实例"  multiLine :rows="1" :rowsMax="5" fullWidth v-model="work.content" />
+        </mu-col>
+      </mu-row>
+    </mu-container>
+    <mu-button slot="actions" @click="closeWork()" >关闭</mu-button>
+    <mu-button slot="actions" @click="wordData()" >确定</mu-button>
+  </mu-dialog>
+
+  <div class="work-content">
+      <div v-if="workEmpty" class="empty">请添加工作经验情况</div>
+      <div v-for="(item,index) in works" v-else class="list">
+          <mu-row gutter>
+            <mu-col width="100" table="30" desktop="30">
+                <span class="title-font">{{item.startTime.getFullYear()+'-'+(item.startTime.getMonth()+1)+'-'+item.startTime.getDate()}}</span>
+                <!-- 后台传递的是json格式的数据 -->
+                <span class="title-font">--</span> 
+                <span class="title-font">{{item.endTime.getFullYear()+'-'+(item.endTime.getMonth()+1)+'-'+item.endTime.getDate()}}</span>
+              </mu-col>
+              <mu-col width="50" table="30" desktop="30">
+                <span class="title-font">{{item.department}}</span>
+              </mu-col>
+              <mu-col width="50" table="30" desktop="30">
+                <span class="title-font">{{item.position}}</span>
+              </mu-col>
+              <mu-col width="50" table="5" desktop="10">
+                <a href="javascript:;" class="deleteBtn" @click="deleteWork(index)">
+                    <mu-icon value="delete" color="#fff" />
+                </a>
+              </mu-col>
+            </mu-row>
+       
+            <mu-row gutter>
+            <mu-col width="100" table="100" desktop="100">
+              <span class="content-font">{{item.content}}</span>
+            </mu-col>
+        </mu-row>
+      </div>
+  </div>
+</div>
+</template>
+<style></style>
+<script>
+  export default{
+    data () {
+      return {
+        workDialog:false,     
+        workEmpty:true,
+        work:{
+          startTime:"",
+          endTime:"",
+          department:"",
+          position:"",
+          content:"",
+        },
+        works:[],
+      }
+    },
+    methods: {
+        openWork () { 
+          this.workDialog = true
+        },
+        closeWork () {
+          this.workDialog = false
+        },
+        wordData(){
+          this.works.push(this.work);
+          this.workDialog = false;
+          this.workEmpty = false;
+        },
+        deleteWork(index){
+          this.works.splice(index,1);
+          if(this.works.length==0){
+              this.workEmpty = true;
+          }
+        },
+    },
+  }
+</script>
