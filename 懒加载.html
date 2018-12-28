@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>懒加载</title>
+</head>
+<style>
+.image-item
+{
+    margin-bottom: 50px;
+    height: 200px;
+    /* 一定要设置图片高度 */
+}
+</style>
+<body>
+    <img src="" alt="" class="image-item" lazyload='true' data-original="01.jpg">
+    <img src="" alt="" class="image-item" lazyload='true' data-original="02.jpg">
+    <img src="" alt="" class="image-item" lazyload='true' data-original="03.jpg">
+    <img src="" alt="" class="image-item" lazyload='true' data-original="04.jpg">
+    <script>
+    //懒加载也叫延迟加载，指的是在长网页延迟加载图像，是一种优化网页性能的方式
+    //使用懒加载的优势?
+    //能提升用户体验，减少无效的资源的加载
+    // 防止并发加载的资源过多，会阻塞js的加载
+
+    //首先将页面上的图片的 src 属性设为空字符串，而图片的真实路径则设置在data-original属性中，
+    //当页面滚动的时候需要去监听scroll事件，在scroll事件的回调中，判断我们的懒加载的图片是否进入可视区域,
+    //如果图片在可视区内将图片的 src 属性设置为data-original 的值，这样就可以实现延迟加载。 
+     let viewH=document.documentElement.clientHeight;//获取可视区域的宽裕
+     function lazyload()
+     {
+         let eles=document.querySelectorAll('img[lazyload][data-original]');//包含选择器
+         for(let i=0;i<eles.length;i++)
+         {
+             console.log(eles[i])
+             test(eles[i]);
+         }
+     }
+         function test(item)//each对象中调用fn函数，但是这时候fn函数还没有确定呢，所以必须使用call()方法来调用。
+         {
+            let rect;
+         console.log(item.dataset.original);
+            if(item.dataset.original!='')
+        {
+
+            rect=item.getBoundingClientRect();//用于获取某个元素相对于视窗的位置集合
+            if(rect.bottom>=0&&rect.top<viewH)//图片处于视图中
+            {
+                !function()//立即执行函数
+                {
+                   let img=new Image();
+                   img.src=item.dataset.original;
+                   img.onload=function()
+                   {
+                       item.src=img.src;
+                   }
+           item.removeAttribute('data-original');//移除自定义属性
+           item.removeAttribute('lazyload');
+                }();
+            }
+           }
+         }
+      lazyload()//刚开始还没滚动屏幕时,先 触发一次函数,初始化首页的页面图片
+     document.addEventListener('scroll',lazyload);
+    </script>
+</body>
+</html>
